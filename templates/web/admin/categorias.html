@@ -1,0 +1,81 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Categorias{% endblock %}
+{% block page_title %}Categorias{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var app = new Vue({
+            el: '#app',
+            delimiters: ['[[',']]'],
+            data: {
+                verBorrar: false,
+                categoriaIdBorrar: 0
+            },
+            methods: {
+                mostrarMensaje: function (idBorrar) {
+                    this.categoriaIdBorrar = idBorrar;
+                    this.verBorrar = !this.verBorrar;
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+<div id="app">
+    <table class="table">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                    <tr>
+                        <td>
+                            {{ categoria.id }}
+                        </td>
+                        <td>
+                            {{ categoria.name }}
+                        </td>
+                        <td>
+                            <div class="columns">
+                                <div class="column">
+                                    <a href="{{ url_for('admin_editar_categoria', id=categoria.id) }}" class="button is-primary">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                </div>
+                                <div class="column">
+                                    <a @click="mostrarMensaje({{ categoria.id }})" href="#" class="button is-danger">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>        
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="modal" v-bind:class="{ 'is-active': verBorrar }">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    ¿Seguro que quieres borrarlo?
+                </header>
+                <section class="modal-card-body">
+                <!-- Content ... -->
+                </section>
+                <footer class="modal-card-foot">
+                    <form action="{{ url_for('borrar_categoria') }}" method="post">
+                        <input type="hidden" name="categoria-borrar" :value="categoriaIdBorrar" >
+                        <input type="submit" class="button is-danger" value="Si">
+                    </form>
+                    <button @click="mostrarMensaje(0)" class="button">No</button>
+                </footer>
+            </div>
+        </div>
+    </div>
+{% endblock %}
